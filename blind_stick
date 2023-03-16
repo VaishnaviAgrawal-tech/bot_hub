@@ -1,0 +1,54 @@
+
+const int trigPin = 3;
+const int echoPin = 5;
+const int buzzer = 8;
+const int motorPin = 10;
+
+
+long duration;
+int distance;
+int safetyDistance;
+
+
+void setup() {
+pinMode(trigPin, OUTPUT); 
+pinMode(echoPin, INPUT); 
+pinMode(buzzer, OUTPUT);
+pinMode(motorPin, OUTPUT);
+Serial.begin(9600); 
+}
+
+
+void loop() {
+
+digitalWrite(trigPin, LOW);
+delayMicroseconds(2);
+
+
+digitalWrite(trigPin, HIGH);
+delayMicroseconds(10);
+digitalWrite(trigPin, LOW);
+
+
+duration = pulseIn(echoPin, HIGH);
+// Serial.print("Duration: ");
+// Serial.println(duration);
+
+distance= duration*0.017;
+
+safetyDistance = distance;
+if (safetyDistance <= 45 and safetyDistance!=0 ){
+  digitalWrite(buzzer, HIGH);
+  analogWrite(motorPin,153);
+ // digitalWrite(motorPin, HIGH);
+}
+else{
+  digitalWrite(buzzer, LOW);
+  analogWrite(motorPin,0);
+    //digitalWrite(motorPin, LOW);
+}
+
+
+Serial.print("Distance: ");
+Serial.println(distance);
+}
