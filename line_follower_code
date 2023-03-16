@@ -1,0 +1,158 @@
+int current=0 ,pathlength, templength = pathlength;
+bool changed = true;
+char a1[100], a2[100], temp_path[100],char optimizedPath[100];
+int optimizedPathLength = pathlength;
+void nullify(char a[]) {
+  for (int i = 0; i < templength; i++) {
+    a[i] = NULL;
+  }
+}
+void run_extrainch(){
+  analogWrite(enA,motormaxSpeedA);
+  analogWrite(enB,motormaxSpeedB);
+  digitalWrite(motorinput1, LOW);
+  digitalWrite(motorinput2, HIGH);
+  digitalWrite(motorinput3, LOW);
+  digitalWrite(motorinput4, HIGH);
+  Stop();
+  readSensor();
+  if(a3>t || a4>t){
+    
+  }
+}
+void reset(){
+  nullify(temp_path);
+  nullify(optimizedPath)
+  templength=0;
+  optimizedPathLength=0;
+}
+void optimizeMaze() {
+
+  for (int i = 0; i < pathlength; i++) {
+    a1[i] = temp_path[i];
+  }
+  while (changed == true) {
+    changed = false;
+    for (int i = 0, j = 0; i < templength; i++, j++) {
+
+      if (a1[i + 1] != 'B') {
+        a2[j] = a1[i];
+      } else if (a1[i + 1] == 'B') {
+
+        if (a1[i] == 'L' && a1[i + 2] == 'R') {
+          a2[j] = 'B';
+        } else if (a1[i] == 'L' && a1[i + 2] == 'S') {
+          a2[j] = 'R';
+        } else if (a1[i] == 'R' && a1[i + 2] == 'L') {
+          a2[j] = 'B';
+        } else if (a1[i] == 'S' && a1[i + 2] == 'L') {
+          a2[j] = 'R';
+        } else if (a1[i] == 'S' && a1[i + 2] == 'S') {
+          a2[j] = 'B';
+        } else if (a1[i] == 'L' && a1[i + 2] == 'L') {
+          a2[j] = 'S';
+        }
+
+        i += 2;
+        optimizedPathLength -= 2;
+      }  //end if
+
+    }  //end for
+    nullify(a1);
+    templength = optimizedPathLength;
+
+    for (int i = 0, j = 0; i < templength; i++, j++) {
+      if (a2[i + 1] != 'B') {
+        a1[j] = a2[i];
+      } else if (a2[i + 1] == 'B') {
+
+        if (a2[i] == 'L' && a2[i + 2] == 'R') {
+          a1[j] = 'B';
+        } else if (a2[i] == 'L' && a2[i + 2] == 'S') {
+          a1[j] = 'R';
+        } else if (a2[i] == 'R' && a2[i + 2] == 'L') {
+          a1[j] = 'B';
+        } else if (a2[i] == 'S' && a2[i + 2] == 'L') {
+          a1[j] = 'R';
+        } else if (a2[i] == 'S' && a2[i + 2] == 'S') {
+          a1[j] = 'B';
+        } else if (a2[i] == 'L' && a2[i + 2] == 'L') {
+          a1[j] = 'S';
+        }
+        i += 2;
+        optimizedPathLength -= 2;
+        changed = true;
+      }
+    }  //end for
+    nullify(a2);
+    templength = optimizedPathLength;
+  }  //end while
+  for (i = 0; i < optimizedPathLength; i++) {
+    optimizedPath[i] = a1[i];
+  }
+}
+void runOptimizedMaze() {
+  if (optimizedPath[current] == 'L') {
+    turnleft();
+    current++;
+  } else if (optimizedPath[current] == 'R') {
+    turnright();
+    current++;
+  } else if (optimizedPath[current] = 'F') {
+    moveforwd();
+    current++;
+  }
+}
+void setup() {
+  // put your setup code here, to run once:
+}
+
+
+
+void loop() {
+  if (mazeFinished==true){
+    OptimizeMaze();
+    mazeFinished=false;
+  }
+  readSensor();
+
+  if (a1 < t && a2 < t && (a3 > t || a4 > t) && a5 < t && a6 < t) {
+    moveforwd();
+  }
+
+  else if (a1 < t && a2 < t && (a3 > t || a4 > t) && a5 > t && a6 > t) {
+    run_extrainch();
+    if (a1 < t && a2 < t && (a3 > t || a4 > t) && a5 < t && a6 < t) {
+      runOptimizedMaze();}
+    else{
+      turnright();}
+  }
+  else if (a1 > t && a2 > t && a3 > t && a5 > t && a6 > t) {
+     runOptimizedMaze();
+  }
+
+  else if (a1 > t && a2 > t && a3 > t && a5 < t && a6 < t) {
+    run_extrainch();  
+  }
+
+  else if (a1 < t && a2 < t && a4 > t && a5 > t && a6 > t) {
+    run_extrainch();
+    if (a1 < t && a2 < t && (a3 > t || a4 > t) && a5 < t && a6 < t){
+      runOptimizedMaze();}
+    else{
+    turnright();
+    }
+  }
+
+// else if (a1 > t && (a2 > t || a3 > t) && a4 < t && a5 < t && a6 < t) {
+//   forwdsltleft();
+//   Serial.println("Slight left for straight path");
+// }
+
+// else if (a1 < t && a2 < t && a3 < t && (a4 > t || a5 > t) && a6 > t) {
+//   forwdsltright();
+//   Serial.println("Slight right for straight path");
+// }
+
+}
+}
